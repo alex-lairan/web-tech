@@ -1,0 +1,57 @@
+\begin{frame}[fragile]
+  \frametitle{Installation d'un SGBD avec Docker}
+
+  Docker facilite l'installation et l'exécution de SGBD de manière isolée. Voici comment installer PostgreSQL avec Docker :
+
+  \begin{enumerate}
+      \item \textbf{Récupérer l'image}:
+      \begin{semiverbatim}
+docker pull postgres:latest
+      \end{semiverbatim}
+
+      \item \textbf{Créer un conteneur}:
+      \begin{semiverbatim}
+docker run --name mon_postgres
+  -e POSTGRES_PASSWORD=monpassword
+  -p 5432:5432 -d postgres
+      \end{semiverbatim}
+
+      \item \textbf{Connexion}:
+      \begin{itemize}
+          \item Utilisez un client PostgreSQL pour vous connecter à `localhost` sur le port `5432` avec le mot de passe `monpassword`.
+          \item Ou utilisez la CLI Docker :
+          \begin{semiverbatim}
+docker exec -it mon_postgres psql -U postgres
+          \end{semiverbatim}
+      \end{itemize}
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Utilisation de Docker Compose pour PostgreSQL}
+
+  Docker Compose permet de définir et d'exécuter des applications Docker multi-conteneurs.
+  \scriptsize
+  \begin{semiverbatim}
+version: '3'
+
+services:
+  db:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=my_database
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+volumes:
+  db:
+    driver: local
+  \end{semiverbatim}
+  \normalsize
+  Avec cette configuration, vous pouvez démarrer le service PostgreSQL simplement en exécutant : \texttt{docker-compose up}
+
+\end{frame}

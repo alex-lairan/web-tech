@@ -1,0 +1,240 @@
+\begin{frame}
+  \frametitle{JDBC (Java Database Connectivity)}
+
+  \small
+  JDBC est une API Java pour se connecter et exécuter des requêtes sur des bases de données. Elle permet aux applications Java d'interagir avec des bases de données de manière uniforme, indépendamment du système de gestion de base de données (SGBD) utilisé.
+
+  \begin{itemize}
+    \item \textbf{Pilotes JDBC} : Permettent la connexion à différents SGBD.
+    \item \textbf{Connection} : Représente une session de base de données.
+    \item \textbf{Statement} : Pour exécuter des requêtes SQL simples.
+    \item \textbf{PreparedStatement} : Pour exécuter des requêtes SQL précompilées, avec ou sans paramètres.
+    \item \textbf{ResultSet} : Représente le résultat d'une requête SELECT.
+  \end{itemize}
+
+  \begin{exampleblock}{Exemple de connexion}
+    \small
+    \texttt{Connection conn = DriverManager.getConnection( \\
+    \quad "jdbc:postgresql://localhost:5432/maBase", "monUser", "monPass");}
+  \end{exampleblock}
+
+  \small
+  \textbf{Note} : Toujours fermer les ressources JDBC (`Connection`, `Statement`, etc.) après utilisation pour éviter les fuites de ressources.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{La gem Ruby \texttt{pg}}
+
+  La gem \texttt{pg} est l'interface Ruby pour le système de gestion de base de données PostgreSQL. Elle fournit une intégration complète avec Ruby, permettant aux applications Ruby et Rails d'interagir directement avec des bases de données PostgreSQL.
+
+  \begin{itemize}
+    \small
+    \item \textbf{Installation} : \texttt{gem install pg}
+    \item \textbf{Connexion} : Utilisation de la classe \texttt{PG::Connection}.
+    \item \textbf{Exécution de requêtes} : Avec \texttt{exec}, \texttt{exec\_params}, etc.
+    \item \textbf{Résultats} : Traités via des objets \texttt{PG::Result}.
+  \end{itemize}
+
+  \begin{exampleblock}{Exemple de connexion et de requête}
+    \small
+    \texttt{conn = PG.connect( dbname: 'test' ) \\
+    result = conn.exec("SELECT * FROM table") \\
+    result.each do |row| \\
+    \quad puts row['colonne'] \\
+    end \\
+    conn.close}
+  \end{exampleblock}
+
+  \small
+  \textbf{Note} : Pour une intégration avec Rails (framework web Ruby), Active Record utilise la gem `pg` pour communiquer avec les bases de données PostgreSQL.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Connecteurs et sécurité : Attention aux injections SQL!}
+
+  Bien que les connecteurs comme la gem \texttt{pg} fournissent des méthodes pour interagir avec des bases de données, ils \textbf{ne garantissent pas une protection automatique} contre toutes les vulnérabilités, en particulier les injections SQL.
+
+  \begin{block}{Injection SQL}
+    Une attaque où un attaquant peut exécuter du code SQL arbitraire sur une base de données en "injectant" des commandes malveillantes via l'entrée utilisateur.
+  \end{block}
+
+  \begin{itemize}
+    \item \textbf{Eviter} : Ne jamais concaténer ou interpoler directement des entrées utilisateur dans vos requêtes SQL.
+    \item \textbf{Préparation de requêtes} : Utilisez toujours des requêtes préparées ou des méthodes fournies par le connecteur pour éviter les injections.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Connecteurs et sécurité : Attention aux injections SQL!}
+\begin{alertblock}{Mauvaise pratique}
+  \small
+  \texttt{requete = "SELECT * FROM users WHERE name = '" + params[:name] + "'" \\
+  conn.exec(requete)}
+\end{alertblock}
+
+\begin{exampleblock}{Bonne pratique}
+  \small
+  \texttt{conn.exec\_params("SELECT * FROM users WHERE name = \$1", [params[:name]])}
+\end{exampleblock}
+
+\textbf{Conseil} : Toujours valider, échapper et/ou filtrer les entrées utilisateur. Familiarisez-vous avec les meilleures pratiques de sécurité spécifiques à votre connecteur ou framework.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sequel : L'ORM et le générateur de requêtes pour Ruby}
+
+  Sequel est une gem Ruby flexible, puissante et intuitive pour l'accès aux bases de données. Elle fournit un mappage objet-relationnel (ORM) et des capacités de construction de requêtes.
+
+  \begin{itemize}
+    \item \textbf{Installation} : \texttt{gem install sequel}
+    \item \textbf{Connexion} : Supporte de nombreux SGBD, dont PostgreSQL, MySQL, SQLite, etc.
+    \item \textbf{Modèles} : Représentation des tables sous forme d'objets Ruby.
+    \item \textbf{Construction de requêtes} : Méthodes chaînées pour une syntaxe fluide et compréhensible.
+  \end{itemize}
+
+  \begin{exampleblock}{Exemple de connexion et de requête}
+    \small
+    \texttt{DB = Sequel.connect('postgres://user:password@localhost/my\_db') \\
+    users = DB[:users] \\
+    users.where(name: 'Alice').first}
+  \end{exampleblock}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Sécurité avec Sequel}
+
+  \small
+  Bien que Sequel soit conçu pour offrir une protection robuste contre les injections SQL, il est essentiel de suivre de bonnes pratiques pour garantir la sécurité des données.
+
+  \begin{block}{Prévention des injections SQL}
+    Sequel utilise des requêtes préparées et des placeholders pour protéger contre les injections SQL dans la plupart des cas courants.
+  \end{block}
+
+  \begin{exampleblock}{Bonne pratique}
+    \small
+    \texttt{users = DB[:users] \\
+    users.where(name: params[:name]).all}
+  \end{exampleblock}
+
+  \begin{alertblock}{Mauvaise pratique}
+    \small
+    \texttt{users = DB[:users] \\
+    users.where("name = '\#{params[:name]}'").all}
+  \end{alertblock}
+
+  \textbf{Conseil} : Malgré les protections offertes par les outils, il est toujours crucial d'avoir une compréhension de base des vulnérabilités potentielles pour écrire un code sécurisé.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{ROM-rb : Un méta-ORM}
+
+  ROM (Ruby Object Mapper) est un méta-ORM axé sur la simplicité, la flexibilité et la performance.
+
+  \begin{itemize}
+    \item \textbf{Multi-ORM} : Conçu pour travailler avec plusieurs types d'ORM.
+    \item \textbf{Aucune magie cachée} : Ce que vous écrivez est ce que vous obtenez, sans surcharge ni surprise.
+    \item \textbf{Multi-Paradigme} : Il est possible de mélanger des appels de plusieurs ORM sans difficultés.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{ROM-rb et Sequel}
+
+  Bien que ROM soit un méta-ORM, sa composante SQL utilise Sequel, tirant parti de sa puissance et de sa flexibilité.
+
+  \begin{itemize}
+    \item \textbf{Synergie} : ROM s'appuie sur les meilleures parties de Sequel pour le mappage et la génération de requêtes.
+    \item \textbf{Flexibilité} : Avec Sequel comme moteur, ROM peut gérer une grande variété de cas d'utilisation.
+    \item \textbf{Protection} : Bénéficie des protections de Sequel contre les injections SQL.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{ROM dans le cours}
+
+  Pour ce cours, nous allons utiliser ROM avec ses adaptateurs in-memory et SQL.
+
+  \begin{itemize}
+    \item \textbf{ROM in-memory} :
+      \begin{itemize}
+        \item Permet de manipuler des objets sans base de données.
+        \item Idéal pour les tests et les démos.
+      \end{itemize}
+    \item \textbf{ROM SQL} :
+      \begin{itemize}
+        \item Utilise Sequel pour interagir avec des bases de données relationnelles.
+        \item Permet une intégration directe avec PostgreSQL, MySQL, SQLite, et plus.
+      \end{itemize}
+  \end{itemize}
+
+  \textbf{Note} : ROM est un outil puissant qui offre à la fois simplicité et flexibilité pour les développeurs Ruby.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Configuration de ROM}
+
+  Pour configurer ROM, nous utilisons l'objet \texttt{ROM::Configuration}.
+
+  \begin{itemize}
+    \item On déclare deux adaptateurs : \textbf{memory} et \textbf{sql}.
+    \item L'adaptateur \textbf{memory} est utile pour la manipulation en mémoire, sans interaction avec une base de données.
+    \item L'adaptateur \textbf{sql} est configuré avec une URL de base de données, généralement stockée dans une variable d'environnement.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Auto-enregistrement avec ROM}
+
+  ROM offre une fonction d'auto-enregistrement pour charger automatiquement les composants.
+
+  \begin{itemize}
+    \item Le chemin est configuré pour pointer vers le répertoire \texttt{persistance} de notre code source.
+    \item Le paramètre \texttt{namespace} est utilisé pour qualifier les composants, ici avec le nom 'Persistance'.
+  \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Création du conteneur ROM}
+
+  Une fois la configuration établie, nous créons le conteneur ROM.
+
+  \begin{semiverbatim}
+  rom\_container = ROM.container(configuration)
+  \end{semiverbatim}
+
+  \begin{itemize}
+    \item Le conteneur est un objet central dans ROM.
+    \item Il donne accès à toutes les fonctionnalités configurées, y compris les adaptateurs et les repositories.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Les Relations en ORM}
+
+  Dans le monde des bases de données, les \textbf{relations} définissent comment les tables interagissent entre elles.
+
+  \begin{itemize}
+    \item \textbf{One-to-One (1:1)} : Une entrée dans une table est liée à une et une seule entrée dans une autre table.
+    \item \textbf{One-to-Many (1:N)} : Une entrée dans une table peut être liée à plusieurs entrées dans une autre table.
+    \item \textbf{Many-to-Many (N:N)} : Plusieurs entrées dans une table peuvent être liées à plusieurs entrées dans une autre table.
+  \end{itemize}
+
+  Dans ROM et d'autres ORM:
+  \begin{itemize}
+    \item Les relations sont définies dans des fichiers spécifiques.
+    \item Ils offrent des méthodes pour accéder et manipuler les données liées.
+  \end{itemize}
+
+\end{frame}

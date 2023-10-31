@@ -1,0 +1,17 @@
+\frametitle{La Relation des Jeux (`Games`)}
+
+  \begin{lstlisting}[language=Ruby]
+schema(:games, as: :games_sql) do
+  attribute :id, Types::PG::UUID
+  attribute :player_x_id, Types::PG::UUID
+  attribute :player_o_id, Types::PG::UUID
+  # ... (autres attributs)
+  associations do
+    has_many :moves
+    belongs_to :players, as: :player_x, foreign_key: :player_x_id
+    belongs_to :players, as: :player_o, foreign_key: :player_o_id
+  end
+end
+  \end{lstlisting}
+
+  La relation `Games` a des associations `belongs\_to` avec la table `Players`.

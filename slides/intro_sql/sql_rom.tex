@@ -1,0 +1,54 @@
+\begin{frame}
+  \frametitle{Introduction aux Relations avec ROM}
+  Dans le cadre de ROM, les \textbf{relations} décrivent la structure des tables et leurs associations dans la base de données.
+
+  \begin{itemize}
+    \item Chaque relation correspond à une table dans la base de données.
+    \item Les attributs de la relation correspondent aux colonnes de la table.
+    \item Les associations définissent les liaisons entre les tables.
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{La Relation des Joueurs (`Players`)}
+
+  \begin{lstlisting}[language=Ruby]
+module Persistance
+  module Relations
+    class PlayersSql < ROM::Relation[:sql]
+      schema(:players, as: :players_sql) do
+        attribute :id, Types::PG::UUID
+        attribute :name, Types::String
+        primary_key :id
+      end
+
+      def for_ids(ids)
+        where(id: ids)
+      end
+    end
+  end
+end
+  \end{lstlisting}
+
+  Cette relation décrit la table `players` avec ses attributs et une méthode supplémentaire pour filtrer par `ids`.
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{La Relation des Jeux (`Games`)}
+
+  \begin{lstlisting}[language=Ruby]
+schema(:games, as: :games_sql) do
+  attribute :id, Types::PG::UUID
+  attribute :player_x_id, Types::PG::UUID
+  attribute :player_o_id, Types::PG::UUID
+  # ... (autres attributs)
+  associations do
+    has_many :moves
+    belongs_to :players, as: :player_x, foreign_key: :player_x_id
+    belongs_to :players, as: :player_o, foreign_key: :player_o_id
+  end
+end
+  \end{lstlisting}
+
+  La relation `Games` a des associations `belongs\_to` avec la table `Players`.
+\end{frame}

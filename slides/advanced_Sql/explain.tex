@@ -1,0 +1,85 @@
+\begin{frame}
+  \frametitle{Qu'est-ce que EXPLAIN en SQL?}
+
+  \textbf{EXPLAIN} est une commande SQL qui permet de:
+  \begin{itemize}
+    \item Visualiser le plan d'exécution d'une requête.
+    \item Comprendre comment le système de gestion de base de données (SGBD) va traiter votre requête.
+    \item Identifier les goulots d'étranglement potentiels.
+  \end{itemize}
+
+  En d'autres termes, il aide à optimiser les performances des requêtes.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Pourquoi utiliser EXPLAIN?}
+
+  Lorsque les requêtes deviennent complexes:
+  \begin{itemize}
+    \item Le SGBD choisit parmi plusieurs méthodes pour récupérer les données.
+    \item Il peut utiliser des index, faire des scans complets, joindre les tables de différentes manières, etc.
+    \item \textbf{EXPLAIN} montre le chemin choisi par le SGBD.
+    \item Permet d'identifier si le SGBD utilise les bonnes ressources (par exemple, les index).
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Comment utiliser EXPLAIN?}
+
+  Très simple à utiliser :
+  \begin{lstlisting}[language=SQL]
+EXPLAIN SELECT * FROM table WHERE condition;
+  \end{lstlisting}
+
+  Le résultat vous donnera un aperçu du plan d'exécution, y compris :
+  \begin{itemize}
+    \item Type de scan (index ou full)
+    \item Estimation du coût
+    \item Tables et joints utilisés
+    \item Et plus encore...
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Interpréter les résultats de EXPLAIN}
+
+  \begin{itemize}
+    \item `Seq Scan`: scan séquentiel de la table.
+    \item `Index Scan`: utilisation d'un index.
+    \item `Bitmap Index Scan`: création d'un bitmap à partir d'un index.
+    \item Coût : estimé en unités de temps CPU et I/O.
+    \item Et bien d'autres informations utiles pour l'optimisation.
+  \end{itemize}
+
+  Astuce : utiliser des outils graphiques ou des extensions pour une meilleure lisibilité.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Outils de Visualisation pour \texttt{EXPLAIN}}
+
+  \begin{itemize}
+    \item \textbf{PEV (Postgres EXPLAIN Visualizer)}
+    \begin{itemize}
+      \item Outil en ligne gratuit pour visualiser les plans \texttt{EXPLAIN} de PostgreSQL.
+      \item \url{https://tatiyants.com/pev/}
+    \end{itemize}
+
+    \vspace{0.5em}
+
+    \item \textbf{Depesz's Explain Analyzer}
+    \begin{itemize}
+      \item Analysez et visualisez les sorties de \texttt{EXPLAIN}.
+      \item Annotations utiles pour une meilleure compréhension.
+      \item \url{https://explain.depesz.com/}
+    \end{itemize}
+
+    \vspace{0.5em}
+
+    \item \textbf{pgAdmin}
+    \begin{itemize}
+      \item Application de gestion pour PostgreSQL avec visualisation intégrée.
+      \item Idéal pour ceux qui utilisent déjà pgAdmin pour la gestion de la base de données.
+      \item \url{https://www.pgadmin.org/}
+    \end{itemize}
+  \end{itemize}
+\end{frame}

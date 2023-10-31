@@ -1,0 +1,14 @@
+\frametitle{Comment utiliser EXPLAIN?}
+
+  Très simple à utiliser :
+  \begin{lstlisting}[language=SQL]
+EXPLAIN SELECT * FROM table WHERE condition;
+  \end{lstlisting}
+
+  Le résultat vous donnera un aperçu du plan d'exécution, y compris :
+  \begin{itemize}
+    \item Type de scan (index ou full)
+    \item Estimation du coût
+    \item Tables et joints utilisés
+    \item Et plus encore...
+  \end{itemize}

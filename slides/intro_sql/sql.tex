@@ -1,0 +1,408 @@
+\begin{frame}[fragile]
+  \frametitle{Création de Tables en SQL}
+
+  En SQL, la commande \texttt{CREATE TABLE} permet de créer une nouvelle table dans la base de données.
+
+  \begin{semiverbatim}
+CREATE TABLE nom\_de\_la\_table (
+    colonne1 type\_de\_donnée1 contraintes1,
+    colonne2 type\_de\_donnée2 contraintes2,
+    ...
+);
+  \end{semiverbatim}
+
+  \textbf{Exemple:}
+  \begin{semiverbatim}
+CREATE TABLE users (
+    user\_id SERIAL PRIMARY KEY,
+    username VARCHAR(100) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created\_at TIMESTAMP DEFAULT CURRENT\_TIMESTAMP
+);
+  \end{semiverbatim}
+
+  Ici, \texttt{users} est une table avec plusieurs colonnes et contraintes associées.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Types de Données en SQL}
+
+  Les types de données définissent le genre d'information que vous pouvez stocker dans une colonne spécifique d'une table. Voici quelques types courants:
+
+  \begin{columns}
+    \column{0.5\textwidth}
+    \begin{itemize}
+      \item \textbf{INTEGER}: Nombre entier
+      \item \textbf{REAL, FLOAT}: Nombres à virgule flottante
+      \item \textbf{DECIMAL(p, s)}: Nombres décimaux avec précision
+      \item \textbf{CHAR(n)}: Chaîne de caractères de longueur fixe
+      \item \textbf{VARCHAR(n)}: Chaîne de caractères de longueur variable
+    \end{itemize}
+
+    \column{0.5\textwidth}
+    \begin{itemize}
+      \item \textbf{DATE}: Date (année, mois, jour)
+      \item \textbf{TIME}: Temps (heure, minute, seconde)
+      \item \textbf{TIMESTAMP}: Date et heure
+      \item \textbf{BOOLEAN}: Vrai ou Faux
+      \item \textbf{BLOB}: Objet binaire (comme une image ou un fichier)
+    \end{itemize}
+  \end{columns}
+
+  \vspace{0.25cm}
+  \small
+  Chaque Système de Gestion de Base de Données (SGBD) peut avoir ses propres types de données spécifiques, donc il est important de consulter la documentation du SGBD que vous utilisez.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Types de Données Spéciaux de PostgreSQL}
+
+  PostgreSQL offre une variété de types de données uniques qui le distinguent des autres SGBD. Voici quelques-uns de ces types :
+
+  \begin{columns}
+    \column{0.5\textwidth}
+    \begin{itemize}
+      \item \textbf{SERIAL}: Nombre entier auto-incrémenté
+      \item \textbf{UUID}: Identifiant universel unique
+      \item \textbf{ARRAY}: Tableau d'éléments d'un type spécifié
+      \item \textbf{JSON, JSONB}: Pour stocker des données au format JSON
+      \item \textbf{HSTORE}: Paire clé-valeur
+    \end{itemize}
+
+    \column{0.5\textwidth}
+    \begin{itemize}
+      \item \textbf{INET}: Adresse IP
+      \item \textbf{CIDR}: Bloc d'adresses IP
+      \item \textbf{MACADDR}: Adresse MAC
+      \item \textbf{TSVECTOR, TSQUERY}: Pour la recherche en texte intégral
+      \item \textbf{ENUM}: Type énuméré
+    \end{itemize}
+  \end{columns}
+
+  \vspace{0.5cm}
+  Ces types spécifiques offrent plus de flexibilité et de fonctionnalités, optimisant ainsi la performance et la facilité d'utilisation de PostgreSQL.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{PostGIS et ses Types de Données}
+
+  \textbf{PostGIS} est une extension de PostgreSQL qui ajoute le support des types géographiques, permettant la réalisation de requêtes spatiales dans une base de données PostgreSQL.
+
+  \begin{itemize}
+    \item \textbf{Point} : Un point dans l'espace.
+    \item \textbf{LineString} : Une ligne composée de deux points ou plus.
+    \item \textbf{Polygon} : Une forme à deux dimensions.
+    \item \textbf{MultiPoint} : Plusieurs points.
+    \item \textbf{MultiLineString} : Plusieurs lignes.
+    \item \textbf{MultiPolygon} : Plusieurs formes.
+    \item \textbf{GeometryCollection} : Une collection de formes.
+    \item \textbf{BOX2D \& BOX3D} : Bounding box 2D et 3D.
+  \end{itemize}
+
+  Outre ces types, PostGIS fournit de nombreuses fonctions pour créer, manipuler et interroger des données spatiales.
+
+  \vspace{0.25cm}
+  Avec PostGIS, PostgreSQL peut rivaliser avec d'autres SGBD spatiaux dédiés en termes de fonctionnalités et de performance.
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Supprimer une Table : DROP TABLE}
+
+  La commande \textbf{DROP TABLE} est utilisée pour supprimer une table existante dans une base de données. Elle supprime la table et toutes ses données de façon permanente.
+
+  \begin{itemize}
+    \item \textbf{Syntaxe}:
+      \begin{semiverbatim}
+DROP TABLE nom\_de\_la\_table;
+      \end{semiverbatim}
+
+    \item \textbf{Points à considérer}:
+      \begin{itemize}
+        \item La suppression est \alert{irréversible}. Une fois que vous exécutez cette commande, les données sont perdues.
+        \item Assurez-vous d'avoir une sauvegarde des données avant d'utiliser cette commande si nécessaire.
+        \item Soyez prudent lorsque vous utilisez cette commande dans un environnement de production.
+      \end{itemize}
+
+  \end{itemize}
+
+  \textbf{Exemple} :
+      \begin{semiverbatim}
+DROP TABLE employes;
+      \end{semiverbatim}
+  Ceci supprimera la table "employes" et toutes ses données.
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Modification de Tables en SQL}
+
+  Pour ajouter un champ à une table existante, on utilise la commande \texttt{ALTER TABLE} suivie de \texttt{ADD COLUMN}.
+
+  \begin{semiverbatim}
+ALTER TABLE nom\_de\_la\_table
+ADD COLUMN nouveau\_champ type\_de\_donnée contraintes;
+  \end{semiverbatim}
+
+  \textbf{Exemple:}
+  \begin{semiverbatim}
+ALTER TABLE users
+ADD COLUMN last\_login TIMESTAMP;
+  \end{semiverbatim}
+
+  Avec cette commande, un nouveau champ \texttt{last\_login} de type \texttt{TIMESTAMP} est ajouté à la table \texttt{users}.
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Retrait d'un champ d'une table en SQL}
+
+  Pour retirer un champ d'une table existante, on utilise la commande \texttt{ALTER TABLE} suivie de \texttt{DROP COLUMN}.
+
+  \begin{semiverbatim}
+ALTER TABLE nom\_de\_la\_table
+DROP COLUMN nom\_du\_champ;
+  \end{semiverbatim}
+
+  \textbf{Exemple:}
+  \begin{semiverbatim}
+ALTER TABLE users
+DROP COLUMN last\_login;
+  \end{semiverbatim}
+
+  Après l'exécution de cette commande, le champ \texttt{last\_login} sera supprimé de la table \texttt{users}.
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{Clés Étrangères en SQL}
+
+  Une \textbf{clé étrangère} est une colonne ou un ensemble de colonnes dans une table qui fait référence à la clé primaire d'une autre table.
+
+  \begin{itemize}
+    \item Garantit l'\textit{intégrité référentielle} des données.
+    \item Permet de créer des relations entre les tables.
+  \end{itemize}
+
+  \begin{semiverbatim}
+ALTER TABLE nom\_de\_la\_table\_enfant
+ADD FOREIGN KEY (nom\_du\_champ)
+REFERENCES nom\_de\_la\_table\_parent(clé\_primaire);
+  \end{semiverbatim}
+
+  \textbf{Exemple:}
+  \begin{semiverbatim}
+ALTER TABLE orders
+ADD FOREIGN KEY (user\_id)
+REFERENCES users(user\_id);
+  \end{semiverbatim}
+
+  Ici, \texttt{user\_id} dans la table \texttt{orders} fait référence à \texttt{user\_id} dans la table \texttt{users}.
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{La commande SELECT en SQL}
+
+  La commande \texttt{SELECT} permet d'interroger une ou plusieurs tables pour récupérer des données.
+
+  \begin{semiverbatim}
+SELECT colonnes
+FROM nom\_de\_la\_table
+WHERE condition;
+  \end{semiverbatim}
+
+  \begin{itemize}
+    \item \textbf{colonnes}: Spécifiez les colonnes que vous souhaitez récupérer. Utilisez `*` pour toutes les colonnes.
+    \item \textbf{nom\_de\_la\_table}: La table à partir de laquelle vous souhaitez récupérer les données.
+    \item \textbf{WHERE}: Permet de filtrer les résultats selon une condition spécifiée.
+  \end{itemize}
+
+  \textbf{Exemple:}
+  \begin{semiverbatim}
+SELECT username, email
+FROM users
+WHERE user\_id > 100;
+  \end{semiverbatim}
+
+\end{frame}
+
+
+\begin{frame}[fragile]
+  \frametitle{Les Jointures en SQL}
+
+  Les jointures permettent de \textbf{combiner} des lignes de deux ou plusieurs tables en fonction d'une colonne liée entre elles.
+
+  \begin{itemize}
+    \item \textbf{INNER JOIN}: Renvoie les lignes quand il y a au moins une correspondance dans les deux tables.
+    \item \textbf{LEFT (OUTER) JOIN}: Renvoie toutes les lignes de la table de gauche, et les correspondances de la table de droite.
+    \item \textbf{RIGHT (OUTER) JOIN}: Renvoie toutes les lignes de la table de droite, et les correspondances de la table de gauche.
+    \item \textbf{FULL (OUTER) JOIN}: Renvoie les lignes quand il y a une correspondance dans l'une des tables.
+  \end{itemize}
+
+  \textbf{Exemple avec INNER JOIN:}
+  \begin{semiverbatim}
+SELECT users.username, orders.order\_id
+FROM users
+INNER JOIN orders ON users.user\_id = orders.user\_id;
+  \end{semiverbatim}
+
+  Cette requête renvoie tous les usernames et les order\_ids où il existe une correspondance entre les user\_ids des deux tables.
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{La commande INSERT INTO en SQL}
+
+  La commande \texttt{INSERT INTO} permet d'ajouter de nouvelles lignes à une table.
+
+  \begin{semiverbatim}
+INSERT INTO nom\_de\_la\_table (colonne1, colonne2, ...)
+VALUES (valeur1, valeur2, ...);
+  \end{semiverbatim}
+
+  \begin{itemize}
+    \item \textbf{nom\_de\_la\_table}: La table dans laquelle vous souhaitez insérer des données.
+    \item \textbf{colonne1, colonne2, ...}: Les colonnes pour lesquelles vous spécifiez des valeurs.
+    \item \textbf{valeur1, valeur2, ...}: Les valeurs à insérer pour les colonnes spécifiées.
+  \end{itemize}
+
+  \textbf{Exemple:}
+  \begin{semiverbatim}
+INSERT INTO users (username, email)
+VALUES ('jdoe', 'jdoe@example.com');
+  \end{semiverbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{La commande UPDATE en SQL}
+
+  La commande \texttt{UPDATE} permet de modifier des données existantes dans une table.
+
+  \begin{semiverbatim}
+UPDATE nom\_de\_la\_table
+SET colonne1 = valeur1, colonne2 = valeur2, ...
+WHERE condition;
+  \end{semiverbatim}
+
+  \begin{itemize}
+    \item \textbf{nom\_de\_la\_table}: La table dans laquelle vous souhaitez modifier des données.
+    \item \textbf{colonne1 = valeur1, ...}: Paire colonne/valeur spécifiant les nouvelles données.
+    \item \textbf{WHERE}: La condition qui détermine quelles lignes doivent être mises à jour.
+  \end{itemize}
+
+  \textbf{Exemple:}
+  \begin{semiverbatim}
+UPDATE users
+SET email = 'john.doe@example.com'
+WHERE username = 'jdoe';
+  \end{semiverbatim}
+
+\end{frame}
+
+\begin{frame}[fragile]
+  \frametitle{La commande DELETE en SQL}
+
+  La commande \texttt{DELETE} permet de supprimer des enregistrements d'une table en fonction d'une condition donnée.
+
+  \begin{semiverbatim}
+DELETE FROM nom\_de\_la\_table
+WHERE condition;
+  \end{semiverbatim}
+
+  \begin{itemize}
+    \item \textbf{nom\_de\_la\_table}: La table de laquelle vous souhaitez supprimer des enregistrements.
+    \item \textbf{WHERE}: La condition qui détermine quelles lignes doivent être supprimées.
+  \end{itemize}
+
+  \textbf{Exemple:}
+  \begin{semiverbatim}
+DELETE FROM users
+WHERE username = 'jdoe';
+  \end{semiverbatim}
+
+  Cette requête supprime l'utilisateur avec le nom d'utilisateur `jdoe`.
+
+  \alert{Attention!} Sans la clause \texttt{WHERE}, vous supprimerez \textbf{tous} les enregistrements de la table!
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Les Index en SQL}
+
+  Un \textbf{index} est une structure de données qui améliore la vitesse des opérations dans une base de données. Il permet à la base de données de trouver rapidement des enregistrements sans avoir à parcourir chaque enregistrement de la table chaque fois qu'une opération de base de données est effectuée.
+
+  \begin{itemize}
+    \item \textbf{Avantages}:
+      \begin{itemize}
+        \item Augmente la vitesse des opérations de recherche (SELECT).
+        \item Accélère les opérations de jointure entre tables.
+      \end{itemize}
+    \item \textbf{Inconvénients}:
+      \begin{itemize}
+        \item Prend de l'espace de stockage supplémentaire.
+        \item Peut ralentir les opérations d'écriture (INSERT, UPDATE, DELETE) car l'index doit être mis à jour.
+      \end{itemize}
+    \item \textbf{Création d'un index}:
+      \begin{semiverbatim}
+CREATE INDEX nom\_de\_l\_index
+ON nom\_de\_la\_table (colonne);
+      \end{semiverbatim}
+    \item \textbf{Suppression d'un index}:
+      \begin{semiverbatim}
+DROP INDEX nom\_de\_l\_index;
+      \end{semiverbatim}
+  \end{itemize}
+
+  \textbf{Conseil} : N'indexez pas chaque colonne. Indexez les colonnes qui sont fréquemment recherchées ou jointes.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Les Migrations de Bases de Données}
+
+  Une \textbf{migration} fait référence au processus de modification de la structure ou des données d'une base de données entre deux versions d'une application.
+
+  \begin{itemize}
+    \item \textbf{Pourquoi les migrations ?}
+      \begin{itemize}
+        \item Adapter la base de données à de nouvelles exigences.
+        \item Corriger des erreurs de conception précédentes.
+        \item Intégrer de nouvelles fonctionnalités sans perturber les données existantes.
+      \end{itemize}
+
+    \item \textbf{Outils populaires}:
+      \begin{itemize}
+        \item \textbf{Liquibase}
+        \item \textbf{Flyway}
+        \item \textbf{Django Migrations} (pour les utilisateurs de Django)
+        \item \textbf{Alembic} (souvent utilisé avec SQLAlchemy)
+      \end{itemize}
+
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Les Migrations de Bases de Données}
+  \begin{itemize}
+    \item \textbf{Processus typique}:
+      \begin{enumerate}
+        \item Écrire un script de migration pour décrire les changements.
+        \item Tester la migration dans un environnement de développement.
+        \item Appliquer la migration dans l'environnement de production.
+        \item Versionner les migrations pour garder une trace des modifications.
+      \end{enumerate}
+
+  \end{itemize}
+
+  \textbf{Note}: La gestion des migrations est essentielle pour assurer l'intégrité et la consistance des données lors de l'évolution d'une application.
+
+\end{frame}

@@ -1,0 +1,186 @@
+\begin{frame}
+  \frametitle{Fonctions SQL Aggrégées}
+
+  Les fonctions aggrégées permettent d'effectuer un calcul sur un ensemble de valeurs pour renvoyer une seule valeur. Voici quelques fonctions aggrégées couramment utilisées :
+
+  \begin{itemize}
+    \item \textbf{COUNT()} : Compte le nombre d'éléments.
+    \item \textbf{SUM()} : Calcule la somme des éléments.
+    \item \textbf{AVG()} : Calcule la moyenne.
+    \item \textbf{MIN()} : Renvoie la valeur minimale.
+    \item \textbf{MAX()} : Renvoie la valeur maximale.
+    \item \textbf{GROUP\_BY} : Regroupe les résultats selon une ou plusieurs colonnes.
+  \end{itemize}
+
+  Ces fonctions sont essentielles pour l'analyse des données et permettent d'obtenir des résumés informatifs de grands ensembles de données.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exemples de Fonctions SQL Aggrégées}
+
+  \begin{itemize}
+    \item \textbf{COUNT()}: \\
+      \texttt{SELECT COUNT(id) FROM employes;}
+    \item \textbf{SUM()}: \\
+      \texttt{SELECT SUM(salaire) FROM employes;}
+    \item \textbf{AVG()}: \\
+      \texttt{SELECT AVG(salaire) FROM employes;}
+    \item \textbf{MIN() et MAX()}: \\
+      \texttt{SELECT MIN(age), MAX(age) FROM employes;}
+    \item \textbf{GROUP\_BY}: \\
+      \texttt{SELECT departement, COUNT(id) FROM employes GROUP BY departement;}
+  \end{itemize}
+
+  Ces exemples montrent comment les fonctions aggrégées peuvent être utilisées pour interroger une table d'employés.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Window Functions en SQL}
+
+  Les \textit{Window Functions} opèrent sur un ensemble de lignes liées à la ligne courante dans le résultat, appelé "fenêtre". Elles sont essentielles pour des calculs avancés.
+
+  Caractéristiques :
+  \begin{itemize}
+    \item Ne provoquent pas le regroupement des lignes, contrairement aux fonctions aggrégées.
+    \item Opèrent dans le cadre d'une "fenêtre" définie par \texttt{OVER()}.
+    \item Peuvent être combinées avec des fonctions aggrégées, de rang et d'autres.
+  \end{itemize}
+
+  Quelques fonctions populaires :
+  \begin{itemize}
+    \item \textbf{ROW\_NUMBER()}: Numéro de la ligne dans la fenêtre.
+    \item \textbf{RANK()}: Rang des lignes selon la clé de tri.
+    \item \textbf{DENSE\_RANK()}: Rang sans trous.
+    \item \textbf{LAG() et LEAD()}: Accède aux lignes précédentes ou suivantes.
+  \end{itemize}
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exploration des Window Functions}
+
+  Supposons une table \texttt{employes} avec des colonnes \texttt{nom}, \texttt{salaire} et \texttt{departement}.
+
+  \begin{block}{Requête}
+    \texttt{SELECT nom, salaire, \\
+    AVG(salaire) OVER (PARTITION BY departement) AS avg\_dept \\
+    FROM employes;}
+  \end{block}
+
+  \begin{itemize}
+    \item La requête ci-dessus renvoie chaque employé avec son salaire et la moyenne des salaires de son département.
+    \item \textbf{AVG(salaire)} est notre fonction fenêtrée.
+    \item \textbf{OVER()} définit la "fenêtre" des données sur lesquelles la fonction agit.
+    \item \textbf{PARTITION BY departement} signifie que nous calculons la moyenne séparément pour chaque département.
+  \end{itemize}
+
+\end{frame}
+
+
+\begin{frame}
+  \frametitle{Exploration des Window Functions}
+
+  \begin{exampleblock}{Résultat hypothétique}
+    \begin{tabular}{l|c|c}
+      \textbf{Nom} & \textbf{Salaire} & \textbf{Moyenne par Département} \\
+      \hline
+      Alice & 5000 & 5500 \\
+      Bob & 6000 & 5500 \\
+      Charlie & 6500 & 6500 \\
+    \end{tabular}
+  \end{exampleblock}
+
+  \textbf{Note} : Contrairement aux fonctions d'agrégation, les fonctions fenêtrées n'éliminent pas les lignes. Chaque ligne de la table originale apparaît dans le résultat.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exemple avec LAG}
+
+  \small
+  La fonction \texttt{LAG()} permet d'accéder aux données d'une ligne précédente dans le même ensemble de résultats.
+
+  Supposons une table \texttt{ventes} avec des enregistrements de ventes mensuelles :
+
+  \begin{block}{Table \texttt{ventes}}
+    \begin{tabular}{l|c}
+      \textbf{Mois} & \textbf{Ventes} \\
+      \hline
+      Janvier & 100 \\
+      Février & 110 \\
+      Mars & 105 \\
+    \end{tabular}
+  \end{block}
+
+  Si nous voulons comparer les ventes d'un mois à celles du mois précédent
+
+  \begin{block}{Requête}
+    \texttt{SELECT Mois, Ventes, \\
+    LAG(Ventes) OVER (ORDER BY Mois) AS Ventes\_precedentes \\
+    FROM ventes;}
+  \end{block}
+\end{frame}
+
+\begin{frame}
+  \frametitle{Exemple avec LAG}
+
+  \begin{exampleblock}{Résultat}
+    \begin{tabular}{l|c|c}
+      \textbf{Mois} & \textbf{Ventes} & \textbf{Ventes Précédentes} \\
+      \hline
+      Janvier & 100 & NULL \\
+      Février & 110 & 100 \\
+      Mars & 105 & 110 \\
+    \end{tabular}
+  \end{exampleblock}
+
+  \textbf{Note} : Pour le premier enregistrement (Janvier), il n'y a pas de mois précédent, donc \texttt{LAG()} renvoie \texttt{NULL}.
+\end{frame}
+
+\begin{frame}
+  \frametitle{Common Table Expressions (CTE)}
+
+  Un CTE est une table temporaire que vous pouvez référencer dans un SELECT, INSERT, UPDATE, or DELETE. Il permet une meilleure lisibilité et une structure pour des requêtes complexes.
+
+  Syntaxe générale :
+  \begin{block}{Syntaxe}
+    \texttt{WITH nom\_cte AS ( \\
+    \quad -- Sous-requête \\
+    ) \\
+    SELECT ... FROM nom\_cte ...}
+  \end{block}
+
+  \textbf{Note} : Les CTE sont parfaits pour décomposer les requêtes complexes en étapes logiques et lisibles.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{La clause HAVING}
+
+  \texttt{HAVING} est utilisé pour filtrer les résultats après l'application d'une fonction d'agrégation, contrairement à \texttt{WHERE} qui filtre avant.
+
+  \begin{block}{Structure générale}
+    \texttt{SELECT colonne1, fonction\_agg(colonne2) \\
+    FROM table \\
+    GROUP BY colonne1 \\
+    HAVING condition\_sur\_fonction\_agg}
+  \end{block}
+
+  \textbf{Note} : La distinction entre \texttt{WHERE} et \texttt{HAVING} est essentielle. \texttt{WHERE} filtre les enregistrements avant que l'agrégation n'ait lieu, tandis que \texttt{HAVING} filtre après.
+
+\end{frame}
+
+\begin{frame}
+  \frametitle{La clause HAVING}
+
+  Supposons une table \texttt{commandes} avec \texttt{produit} et \texttt{quantite}. Si vous voulez trouver les produits qui ont été commandés en total plus de 100 unités :
+
+  \begin{exampleblock}{Exemple}
+
+    \texttt{SELECT produit, SUM(quantite) AS total\_commandes \\
+    FROM commandes \\
+    GROUP BY produit \\
+    HAVING total\_commandes > 100;}
+  \end{exampleblock}
+\end{frame}
